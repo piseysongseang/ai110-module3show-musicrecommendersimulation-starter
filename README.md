@@ -29,6 +29,14 @@ Some prompts to answer:
 
 You can include a simple diagram or bullet list if helpful.
 
+The features that each `Song` use in the system is: like, genre, mood, tempo, danceability, valence and acousticness.
+
+The `UserProfile` stores username, like, history and preferences.
+
+The recommender compute a score for each song based on like, skip, and full_play.
+
+The songs that will be recommended will be based on the highest score that has been computed by the recommender. 
+
 ---
 
 ## Getting Started
@@ -42,6 +50,7 @@ You can include a simple diagram or bullet list if helpful.
    source .venv/bin/activate      # Mac or Linux
    .venv\Scripts\activate         # Windows
 
+   ```
 2. Install dependencies
 
 ```bash
@@ -101,12 +110,11 @@ Write 1 to 2 paragraphs here about what you learned:
 - about how recommenders turn data into predictions
 - about where bias or unfairness could show up in systems like this
 
-
 ---
 
 ## 7. `model_card_template.md`
 
-Combines reflection and model card framing from the Module 3 guidance. :contentReference[oaicite:2]{index=2}  
+Combines reflection and model card framing from the Module 3 guidance. :contentReference[oaicite:2]{index=2}
 
 ```markdown
 # 🎧 Model Card - Music Recommender Simulation
@@ -209,3 +217,4 @@ A few sentences about what you learned:
 - How did building this change how you think about real music recommenders
 - Where do you think human judgment still matters, even if the model seems "smart"
 
+```
