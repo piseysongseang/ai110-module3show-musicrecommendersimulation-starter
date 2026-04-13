@@ -17,25 +17,58 @@ Replace this paragraph with your own summary of what your version does.
 
 ## How The System Works
 
-Explain your design in plain language.
+**Song Features**
 
-Some prompts to answer:
+Each song in the dataset has seven features used for scoring:
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
+| Feature | Type | What it captures |
+|---|---|---|
+| `genre` | text | musical category (lofi, rock, pop, …) |
+| `mood` | text | emotional feel (chill, intense, happy, …) |
+| `energy` | 0–1 | calm vs. high-energy |
+| `tempo_bpm` | number | beats per minute |
+| `valence` | 0–1 | dark vs. bright/positive |
+| `danceability` | 0–1 | how rhythmically driven the track is |
+| `acousticness` | 0–1 | organic/acoustic vs. electronic |
 
-You can include a simple diagram or bullet list if helpful.
+**User Taste Profile**
 
-The features that each `Song` use in the system is: like, genre, mood, tempo, danceability, valence and acousticness.
+The system compares every song against a user's ideal values:
 
-The `UserProfile` stores username, like, history and preferences.
+```python
+USER_TASTE_PROFILE = {
+    "favorite_genre":    "lofi",
+    "favorite_mood":     "chill",
+    "target_energy":       0.40,
+    "target_tempo":        80.0,
+    "target_valence":      0.60,
+    "target_danceability": 0.58,
+    "target_acousticness": 0.75,
+}
+```
 
-The recommender compute a score for each song based on like, skip, and full_play.
+**Algorithm Recipe**
 
-The songs that will be recommended will be based on the highest score that has been computed by the recommender. 
+Each song is scored on a scale of 0–6 using three tiers:
+
+| Tier | Rule | Points |
+|---|---|---|
+| 1 | Genre matches the user's favorite | +2.0 |
+| 1 | Mood matches the user's favorite | +1.0 |
+| 2 | Energy closeness `(1 − \|song − target\|)` | up to +1.0 |
+| 2 | Tempo closeness (normalized over ±60 BPM) | up to +0.5 |
+| 2 | Valence closeness | up to +0.5 |
+| 2 | Danceability closeness | up to +0.5 |
+| 3 | Acousticness bonus (threshold match) | +0.5 |
+
+Songs are ranked by their total score and the top K are returned.
+
+**Potential Biases**
+
+- **Genre dominance** — genre is worth +2.0 (twice any other single rule). A song that matches mood, energy, tempo, and feel perfectly but is labeled the wrong genre will still rank lower than a genre match with nothing else in common.
+- **Exact label matching** — "lofi" and "ambient" both describe calm music but score 0 for each other. Songs just outside the favorite genre are unfairly penalized.
+- **Single ideal point** — the system assumes one perfect energy or tempo value. A user who enjoys both quiet focus music and upbeat pop cannot be represented by one profile.
+- **Catalog bias** — the dataset skews toward certain genres. Underrepresented styles (e.g. world, blues) will rarely appear in the top K even if they are a good fit.
 
 ---
 
